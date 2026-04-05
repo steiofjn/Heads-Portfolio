@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Head Designs</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg0: #030810;
+    --bg1: #060d1a;
+    --bg2: #0a1628;
+    --bg3: #0f2040;
+    --accent: #1e8fff;
+    --accent2: #0af;
+    --glow: rgba(30,143,255,0.35);
+    --text: #c5deff;
+    --muted: rgba(197,222,255,0.45);
+    --white: #ffffff;
+    --border: rgba(30,143,255,0.14);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; cursor:none !important; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg0);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+    user-select: none;
+  }
+
+  /* ===== CURSOR ===== */
+  #cursor {
+    position: fixed;
+    width: 26px; height: 26px;
+    border: 2px solid var(--accent2);
+    border-radius: 50%;
+    background: transparent;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.08s ease;
+    box-shadow: 0 0 8px rgba(0,170,255,0.4);
+  }
+  #cursor.click { transform: translate(-50%,-50%) scale(0.65); }
+
+  .spark {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    animation: sparkPop 0.5s ease-out forwards;
+  }
+  @keyframes sparkPop {
+    0%   { opacity:1; transform:translate(0,0) scale(1); }
+    100% { opacity:0; transform:translate(var(--tx),var(--ty)) scale(0); }
+  }
+
+  /* ===== CANVAS ===== */
+  #bg { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    background: rgba(3,8,16,0.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+  }
+  .nav-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--accent2);
+    letter-spacing: 3px;
+    text-shadow: 0 0 18px rgba(0,170,255,0.5);
+    text-transform: uppercase;
+  }
+  .nav-links { display:flex; gap:6px; list-style:none; }
+  .nav-links a {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: all 0.22s ease;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--accent2);
+    border-color: rgba(0,170,255,0.3);
+    background: rgba(0,170,255,0.06);
+    text-shadow: 0 0 10px rgba(0,170,255,0.4);
+  }
+
+  /* Hamburger */
+  .hamburger { display:none; flex-direction:column; gap:5px; background:none; border:none; padding:8px; }
+  .hamburger span { display:block; width:22px; height:2px; background:var(--accent2); border-radius:2px; transition:all 0.3s; }
+  .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity:0; }
+  .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  .mob-menu {
+    display: none;
+    position: fixed;
+    top: 66px; left:0; right:0;
+    background: rgba(3,8,16,0.97);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 12px 0 20px;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .mob-menu.open { display:flex; opacity:1; pointer-events:all; }
+  .mob-menu a {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem; font-weight:600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 15px 32px;
+    border-bottom: 1px solid rgba(30,143,255,0.06);
+    transition: all 0.2s;
+  }
+  .mob-menu a:hover, .mob-menu a.active { color:var(--accent2); background:rgba(0,170,255,0.05); }
+
+  /* ===== PAGE ===== */
+  .page { display:none; position:relative; z-index:1; padding-top:66px; min-height:100vh; animation:fadeUp 0.4s ease; }
+  .page.active { display:block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ===== HERO ===== */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 110px 32px 70px;
+    position: relative;
+  }
+  .hero-tag {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 5px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    opacity: 0.8;
+  }
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1;
+    color: var(--white);
+    text-shadow: 0 0 50px rgba(30,143,255,0.3);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+  .hero h1 span { color: var(--accent2); }
+  .hero-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--accent2);
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .hero-desc {
+    max-width: 620px;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--muted);
+    margin-bottom: 44px;
+  }
+
+  /* ===== CTA BUTTON ===== */
+  .cta {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 16px 52px;
+    background: linear-gradient(135deg, #1060cc, var(--accent2));
+    color: #000;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 32px rgba(30,143,255,0.35);
+  }
+  .cta:hover {
+    box-shadow: 0 0 60px rgba(0,170,255,0.7);
+    transform: translateY(-3px) scale(1.03);
+  }
+  .cta:active { transform:scale(0.97); }
+  .cta-ripple {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,0.3);
+    transform:scale(0);
+    animation:ripple 0.5s linear;
+    pointer-events:none;
+  }
+  @keyframes ripple { to { transform:scale(4); opacity:0; } }
+
+  /* ===== STATS ROW ===== */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding: 50px 32px;
+  }
+  .stat-item {
+    text-align: center;
+    padding: 28px 36px;
+    background: rgba(10,22,40,0.7);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-width: 150px;
+    transition: all 0.25s ease;
+  }
+  .stat-item:hover {
+    border-color: rgba(0,170,255,0.35);
+    box-shadow: 0 0 30px rgba(30,143,255,0.12);
+    transform: translateY(-3px);
+  }
+  .stat-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--accent2);
+    text-shadow: 0 0 16px rgba(0,170,255,0.4);
+    display: block;
+  }
+  .stat-lbl {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  /* ===== SECTION ===== */
+  .section { max-width:1100px; margin:0 auto; padding:70px 32px; }
+  .sec-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .sec-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(0,170,255,0.35),transparent); }
+
+  /* ===== FEATURE CARDS ===== */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    gap: 22px;
+    margin-bottom: 60px;
+  }
+  .feat-card {
+    background: rgba(10,22,40,0.7);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .feat-card::before {
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent2),transparent);
+    opacity:0;
+    transition:opacity 0.3s;
+  }
+  .feat-card:hover { border-color:rgba(0,170,255,0.35); transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,50,120,0.25); }
+  .feat-card:hover::before { opacity:1; }
+  .feat-icon { font-size:2rem; margin-bottom:16px; }
+  .feat-card h3 { font-family:'Rajdhani',sans-serif; font-size:1.1rem; font-weight:700; color:var(--text); letter-spacing:1px; margin-bottom:12px; }
+  .feat-card p { font-size:0.9rem; line-height:1.75; color:var(--muted); }
+
+  /* ===== DIVIDER ===== */
+  .divider { height:1px; background:linear-gradient(90deg,transparent,rgba(0,170,255,0.18),transparent); margin:0 32px; }
+
+  /* ===== REVIEWS ===== */
+  .reviews-section { padding:60px 0 50px; position:relative; }
+  .reviews-section::before,
+  .reviews-section::after {
+    content:''; position:absolute; top:0; bottom:0; width:100px; z-index:2; pointer-events:none;
+  }
+  .reviews-section::before { left:0; background:linear-gradient(90deg,var(--bg0),transparent); }
+  .reviews-section::after  { right:0; background:linear-gradient(270deg,var(--bg0),transparent); }
+  .reviews-label {
+    text-align:center;
+    font-family:'Rajdhani',sans-serif;
+    font-size:0.7rem; letter-spacing:4px;
+    color:var(--accent2); text-transform:uppercase;
+    margin-bottom:32px; opacity:0.8;
+  }
+  .reviews-wrap { width:100%; overflow:hidden; }
+  #revTrack {
+    display:flex; flex-wrap:nowrap; gap:22px; width:max-content;
+  }
+  .rev-card {
+    background: rgba(10,22,40,0.8);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 26px 22px;
+    width: 330px; min-width:330px;
+    flex-shrink:0;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .rev-stars { color:#ffc840; font-size:1rem; letter-spacing:2px; text-shadow:0 0 8px rgba(255,200,64,0.4); }
+  .rev-text { font-size:0.88rem; line-height:1.72; color:rgba(197,222,255,0.82); font-style:italic; }
+  .rev-user {
+    display:flex; align-items:center; gap:10px;
+    padding-top:12px; border-top:1px solid rgba(30,143,255,0.08);
+    margin-top:auto;
+  }
+  .rev-user-icon {
+    width:26px; height:26px; border-radius:50%;
+    background:rgba(0,170,255,0.1); border:1px solid rgba(0,170,255,0.22);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .rev-user-icon svg { width:13px; height:13px; }
+  .rev-uname { font-size:0.8rem; font-weight:600; color:rgba(197,222,255,0.55); }
+  .rev-uname span { color:rgba(197,222,255,0.3); font-weight:400; font-size:0.73rem; }
+
+  /* ===== CTA BANNER ===== */
+  .cta-banner {
+    text-align:center; padding:90px 32px;
+    position:relative; overflow:hidden;
+  }
+  .cta-banner::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(ellipse at center,rgba(30,143,255,0.08) 0%,transparent 70%);
+  }
+  .cta-banner h2 {
+    font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:clamp(2rem,5vw,3.2rem);
+    color:var(--white);
+    text-shadow:0 0 40px rgba(30,143,255,0.35);
+    margin-bottom:18px; position:relative;
+    letter-spacing:2px;
+  }
+  .cta-banner p {
+    font-size:1rem; color:var(--muted); max-width:500px;
+    margin:0 auto 36px; line-height:1.8; position:relative;
+  }
+
+  /* ===== GALLERY PAGE ===== */
+  .gallery-intro { text-align:center; max-width:580px; margin:0 auto 52px; font-size:1rem; line-height:1.8; color:var(--muted); }
+  .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:22px; margin-bottom:60px; }
+  .gal-card {
+    background:rgba(10,22,40,0.7); border:1px solid var(--border);
+    border-radius:14px; overflow:hidden; transition:all 0.32s ease;
+  }
+  .gal-card:hover { border-color:rgba(0,170,255,0.4); transform:translateY(-5px); box-shadow:0 24px 60px rgba(0,80,180,0.25); }
+  .gal-preview {
+    height:190px; position:relative; overflow:hidden;
+    background:linear-gradient(135deg,#030810,#0a1628);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .gal-preview img { width:100%; height:100%; object-fit:cover; object-position:center; display:block; transition:transform 0.4s ease; }
+  .gal-card:hover .gal-preview img { transform:scale(1.05); }
+  .gal-preview.placeholder {
+    font-family:'Rajdhani',sans-serif; font-size:0.8rem;
+    letter-spacing:2px; color:rgba(0,170,255,0.4);
+    text-transform:uppercase; flex-direction:column; gap:8px;
+  }
+  .gal-preview.placeholder::before { content:''; width:40px; height:40px; border:2px solid rgba(0,170,255,0.2); border-radius:8px; }
+  .gal-info { padding:18px 22px 20px; }
+  .gal-tag { font-family:'Rajdhani',sans-serif; font-size:0.62rem; letter-spacing:2px; color:var(--accent2); text-transform:uppercase; margin-bottom:7px; display:block; }
+  .gal-info h3 { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; color:var(--text); margin-bottom:6px; }
+  .gal-info p { font-size:0.82rem; color:var(--muted); line-height:1.6; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    position:relative; z-index:1; text-align:center;
+    padding:36px; border-top:1px solid rgba(30,143,255,0.08);
+    font-size:0.8rem; color:rgba(197,222,255,0.28); letter-spacing:1px;
+  }
+  footer span { color:var(--accent2); }
+
+  /* ===== MOBILE ===== */
+  @media(max-width:768px) {
+    nav { padding:0 20px; }
+    .nav-links { display:none; }
+    .hamburger { display:flex; }
+    .hero { padding:80px 20px 50px; }
+    .section { padding:50px 20px; }
+    .feat-grid { grid-template-columns:1fr; }
+    .gallery-grid { grid-template-columns:1fr; }
+    .stats-row { gap:16px; padding:40px 20px; }
+    .cta-banner { padding:60px 20px; }
+    .divider { margin:0 20px; }
+    .cta { padding:14px 36px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">HEAD DESIGNS</div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showPage('home',this)">Home</a></li>
+    <li><a href="#" onclick="showPage('gallery',this)">Gallery</a></li>
+  </ul>
+  <button class="hamburger" id="ham" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+<div class="mob-menu" id="mobMenu">
+  <a href="#" class="active" id="mob-home" onclick="showPage('home',this);closeMenu()">Home</a>
+  <a href="#" id="mob-gallery" onclick="showPage('gallery',this);closeMenu()">Gallery</a>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="page-home" class="page active">
+
+  <div class="hero">
+    <p class="hero-tag">// Roblox Banner & Design Studio</p>
+    <h1><span>Head</span> Designs</h1>
+    <p class="hero-sub">Quality</p>
+    <p class="hero-desc">Premium Roblox banners and graphics crafted with precision and creativity. Whether you need a group banner, profile header, or full brand kit — Head Designs delivers work that actually stands out.</p>
+
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-item"><span class="stat-num">50+</span><span class="stat-lbl">Orders Completed</span></div>
+    <div class="stat-item"><span class="stat-num">5★</span><span class="stat-lbl">Average Rating</span></div>
+    <div class="stat-item"><span class="stat-num">24h</span><span class="stat-lbl">Avg Turnaround</span></div>
+    <div class="stat-item"><span class="stat-num">100%</span><span class="stat-lbl">Satisfaction Rate</span></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="sec-title">What We Offer</h2>
+    <div class="feat-grid">
+      <div class="feat-card">
+
+        <h3>Group Banners</h3>
+        <p>Eye-catching Roblox group banners that represent your brand. Custom designed to match your server's style, colours, and vibe.</p>
+      </div>
+      <div class="feat-card">
+
+        <h3>Profile Graphics</h3>
+        <p>Stand out with a professional profile header or avatar overlay. Clean, sharp, and made to impress.</p>
+      </div>
+      <div class="feat-card">
+
+        <h3>Full Brand Kits</h3>
+        <p>Need everything at once? We build full brand packages — banners, icons, thumbnails, and more — all cohesive and polished.</p>
+      </div>
+      <div class="feat-card">
+
+        <h3>Fast Delivery</h3>
+        <p>Most orders are completed within 24 hours. Rush orders available. We communicate clearly throughout the whole process.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- REVIEWS -->
+  <div class="reviews-section">
+    <div class="reviews-label">★ What Clients Say ★</div>
+    <div class="reviews-wrap">
+      <div id="revTrack">
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"I got a banner made for my head and it was super nice. The amount of time and effort he puts in is insane! Never gave up and I was really happy how it came out. Not even joking almost made me cry. I would be buying more and highly recommend this server to everyone."</div><div class="rev-user"><div class="rev-user-icon"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,170,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="rev-uname">srthellcat_23 <span>Today at 4:12 PM</span></div></div></div>
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"Head was great, he made the images in a great time and overall amazing service."</div><div class="rev-user"><div class="rev-user-icon"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,170,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="rev-uname">secretsfinish <span>Yesterday at 6:48 PM</span></div></div></div>
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"I ordered 5 banners from here and they turned out amazing! The banners are very high-quality, and the prices aren't insane. If I need any more banners, the first place that I'm going to is here. My designer was Headmaster."</div><div class="rev-user"><div class="rev-user-icon"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,170,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="rev-uname">frostdev_rblx <span>Mar 31 at 2:20 PM</span></div></div></div>
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"Genuinely one of the best design services I've come across on Roblox. Fast communication, followed every instruction I gave, and the final result was better than I imagined. Will 100% be back."</div><div class="rev-user"><div class="rev-user-icon"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,170,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="rev-uname">kayden.rbx <span>Mar 29 at 9:05 AM</span></div></div></div>
+        <div class="rev-card"><div class="rev-stars">★★★★★</div><div class="rev-text">"Got a custom group banner done and it looked insane. The colours were exactly what I asked for and he finished it way quicker than expected. Definitely recommending this to my friends."</div><div class="rev-user"><div class="rev-user-icon"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,170,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="rev-uname">lxcas.dev <span>Mar 26 at 5:33 PM</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cta-banner">
+    <h2>Ready to Stand Out?</h2>
+    <p>Join the Discord server, drop your order, and let Head Designs handle the rest. Quality work, fast delivery, fair prices.</p>
+    <a href="https://discord.gg/BUGA3KPeM4" target="_blank" class="cta" onclick="ctaRipple(event)">Get Started</a>
+  </div>
+
+</div>
+
+<!-- ===== GALLERY ===== -->
+<div id="page-gallery" class="page">
+  <div class="section">
+    <h2 class="sec-title">Gallery</h2>
+    <p class="gallery-intro">A showcase of banners and graphics created by Head Designs. Each piece is made from scratch, custom to the client.</p>
+
+    <div class="gallery-grid">
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo1.webp" alt="Texas State Roleplay"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Group Banner</span>
+          <h3>Texas State Roleplay</h3>
+          <p>Custom group banner for Texas State Roleplay featuring the server's branding and logo.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo2.webp" alt="Texas Dashboard"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Dashboard Banner</span>
+          <h3>Texas Dashboard</h3>
+          <p>Dashboard header banner for Texas State Roleplay with bold typography and in-game imagery.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo3.webp" alt="Florida State Roleplay Dashboard"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Dashboard Banner</span>
+          <h3>Florida State Roleplay Dashboard</h3>
+          <p>Cinematic dashboard banner for Florida State Roleplay with police vehicle photography.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview" style="background:#a8d8f0;"><img src="Photo4.webp" alt="Head Designs Promo" style="object-fit:contain;"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Promo Graphic</span>
+          <h3>Head Designs — Join Today</h3>
+          <p>Promotional graphic for Head Designs showcasing the studio's clean typographic style.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo5.webp" alt="Salt Lake Sessions City Roleplay"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Group Banner</span>
+          <h3>Salt Lake Sessions City Roleplay</h3>
+          <p>Vibrant neon-styled banner for Salt Lake Sessions with city roleplay branding.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo6.webp" alt="Seattle City Roleplay"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Group Banner</span>
+          <h3>Seattle City Roleplay</h3>
+          <p>Wide-format banner for Seattle City Roleplay featuring police vehicles and the city logo.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview" style="background:#111c2a;"><img src="Phto7.webp" alt="Texas Divider Bar" style="object-fit:contain;"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Divider / Asset</span>
+          <h3>Texas Roleplay Divider Bar</h3>
+          <p>Custom channel divider asset for Texas State Roleplay's Discord server.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview" style="background:#0e0e08;"><img src="Photo8.webp" alt="Florida Divider Bar" style="object-fit:contain;"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Divider / Asset</span>
+          <h3>Florida Roleplay Divider Bar</h3>
+          <p>Sleek divider bar asset with the Florida Roleplay logo for Discord channels.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview" style="background:#e8f4ff;"><img src="Photo9.webp" alt="City Skyline Logo" style="object-fit:contain; padding:16px;"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Logo / Icon</span>
+          <h3>City Skyline Logo</h3>
+          <p>Clean line-art city skyline logo featuring palm trees and an aircraft silhouette.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo10.webp" alt="Illinois State Police"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Group Banner</span>
+          <h3>Illinois State Police</h3>
+          <p>Recruitment banner for Illinois State Police featuring a Roblox character render and official seal.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview"><img src="Photo11.webp" alt="Developer Hub Information"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Channel Banner</span>
+          <h3>Developer Hub — Information</h3>
+          <p>Bold information channel banner for a Developer Hub server with character render.</p>
+        </div>
+      </div>
+
+      <div class="gal-card">
+        <div class="gal-preview" style="background:#0a1020;"><img src="Photo12.webp" alt="New Jersey State Roleplay" style="object-fit:contain;"></div>
+        <div class="gal-info">
+          <span class="gal-tag">Promotional Graphic</span>
+          <h3>New Jersey State Roleplay</h3>
+          <p>Premium multi-panel promotional graphic for New Jersey State Roleplay with founder vehicles.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2026 <span>Head Designs</span> — All rights reserved.</p></footer>
+
+<script>
+// ===== NAV =====
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a, .mob-menu a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  const mob = document.getElementById('mob-' + id);
+  if (mob) mob.classList.add('active');
+  window.scrollTo(0,0);
+  return false;
+}
+function toggleMenu() {
+  document.getElementById('ham').classList.toggle('open');
+  document.getElementById('mobMenu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('ham').classList.remove('open');
+  document.getElementById('mobMenu').classList.remove('open');
+}
+
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+});
+document.addEventListener('mousedown', e => {
+  cursor.classList.add('click');
+  spawnSparks(e.clientX, e.clientY);
+});
+document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+
+const sparkCols = ['#00aaff','#1e8fff','#7dd3f7','#ffffff','#0af'];
+function spawnSparks(x, y) {
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const a = (Math.PI*2/10)*i + (Math.random()-0.5)*0.6;
+    const d = 28 + Math.random()*40;
+    const sz = 3 + Math.random()*3;
+    const c = sparkCols[Math.floor(Math.random()*sparkCols.length)];
+    s.style.cssText = `left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;border-radius:50%;background:${c};box-shadow:0 0 5px ${c};--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;`;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 520);
+  }
+}
+
+// ===== CTA RIPPLE =====
+function ctaRipple(e) {
+  const btn = e.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  const sz = Math.max(rect.width, rect.height);
+  const r = document.createElement('span');
+  r.className = 'cta-ripple';
+  r.style.width = r.style.height = sz + 'px';
+  r.style.left = (e.clientX - rect.left - sz/2) + 'px';
+  r.style.top  = (e.clientY - rect.top  - sz/2) + 'px';
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 520);
+}
+
+// ===== ANIMATED PARTICLE/NETWORK BACKGROUND =====
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+let W, H, pts = [];
+
+function init() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  pts = [];
+  const count = Math.floor((W * H) / 14000);
+  for (let i = 0; i < count; i++) {
+    pts.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      r: 1.5 + Math.random() * 1.5,
+      a: 0.3 + Math.random() * 0.5,
+    });
+  }
+}
+
+const CONNECT_DIST = 140;
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // Dark base
+  ctx.fillStyle = '#030810';
+  ctx.fillRect(0, 0, W, H);
+
+  // Move particles
+  for (const p of pts) {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0)  p.x = W;
+    if (p.x > W)  p.x = 0;
+    if (p.y < 0)  p.y = H;
+    if (p.y > H)  p.y = 0;
+  }
+
+  // Draw connections
+  for (let i = 0; i < pts.length; i++) {
+    for (let j = i + 1; j < pts.length; j++) {
+      const dx = pts[i].x - pts[j].x;
+      const dy = pts[i].y - pts[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < CONNECT_DIST) {
+        const alpha = (1 - dist / CONNECT_DIST) * 0.28;
+        ctx.beginPath();
+        ctx.moveTo(pts[i].x, pts[i].y);
+        ctx.lineTo(pts[j].x, pts[j].y);
+        ctx.strokeStyle = `rgba(30,143,255,${alpha})`;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Draw dots
+  for (const p of pts) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(100,190,255,${p.a})`;
+    ctx.shadowColor = 'rgba(30,143,255,0.6)';
+    ctx.shadowBlur = 6;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', init);
+init();
+draw();
+
+// ===== REVIEWS SCROLL =====
+(function() {
+  const track = document.getElementById('revTrack');
+  if (!track) return;
+  // Clone cards for infinite loop
+  Array.from(track.children).forEach(c => track.appendChild(c.cloneNode(true)));
+  let pos = 0;
+  function tick() {
+    pos += 0.7;
+    if (pos >= track.scrollWidth / 2) pos = 0;
+    track.style.transform = `translateX(-${pos}px)`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
