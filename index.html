@@ -412,45 +412,71 @@
   footer span { color:var(--accent2); }
 
   /* ===== LIGHTBOX ===== */
-  .gal-preview { cursor: zoom-in !important; }
+  .gal-preview { cursor: zoom-in !important; position: relative; }
+  .gal-preview img { cursor: zoom-in !important; }
+
+  /* Tooltip hint on first card only */
+  .gal-card:first-child .gal-preview::after {
+    content: '🔍 Click to view full image';
+    position: absolute;
+    bottom: 10px; left: 50%; transform: translateX(-50%) translateY(6px);
+    background: rgba(0,0,0,0.82);
+    color: var(--accent2);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,170,255,0.35);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 10;
+  }
+  .gal-card:first-child .gal-preview:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
   #lightbox {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 99990;
     background: rgba(0,0,0,0.92);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     align-items: center;
     justify-content: center;
-    animation: lbFadeIn 0.2s ease;
   }
   #lightbox.open { display: flex; }
-  @keyframes lbFadeIn { from{opacity:0} to{opacity:1} }
   #lightbox img {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
     border-radius: 10px;
     box-shadow: 0 0 80px rgba(0,170,255,0.25);
-    animation: lbZoomIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: default !important;
+    display: block;
   }
-  @keyframes lbZoomIn { from{transform:scale(0.85);opacity:0} to{transform:scale(1);opacity:1} }
   #lb-close {
     position: fixed;
     top: 20px; right: 24px;
-    width: 42px; height: 42px;
+    width: 44px; height: 44px;
     background: rgba(0,170,255,0.12);
     border: 1px solid rgba(0,170,255,0.3);
     border-radius: 50%;
     color: var(--accent2);
     font-size: 1.3rem;
-    line-height: 42px;
+    line-height: 44px;
     text-align: center;
     cursor: pointer !important;
-    z-index: 99991;
+    z-index: 99992;
     transition: all 0.2s;
+    user-select: none;
   }
-  #lb-close:hover { background: rgba(0,170,255,0.25); box-shadow: 0 0 20px rgba(0,170,255,0.3); }
+  #lb-close:hover { background: rgba(0,170,255,0.3); box-shadow: 0 0 20px rgba(0,170,255,0.4); }
 
   /* ===== MOBILE ===== */
   @media(max-width:768px) {
@@ -474,7 +500,7 @@
 <div id="cursor"></div>
 
 <!-- LIGHTBOX -->
-<div id="lightbox" onclick="closeLightbox(event)">
+<div id="lightbox" onclick="if(event.target===this)closeLightbox()">
   <div id="lb-close" onclick="closeLightbox()">✕</div>
   <img id="lb-img" src="" alt="">
 </div>
@@ -575,7 +601,7 @@
     <div class="gallery-grid">
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo1.webp" alt="Texas State Roleplay"></div>
+        <div class="gal-preview"><img src="Photo1.webp" onclick="openLightbox(this.src)" alt="Texas State Roleplay"></div>
         <div class="gal-info">
           <span class="gal-tag">Group Banner</span>
           <h3>Texas State Roleplay</h3>
@@ -584,7 +610,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo2.webp" alt="Texas Dashboard"></div>
+        <div class="gal-preview"><img src="Photo2.webp" onclick="openLightbox(this.src)" alt="Texas Dashboard"></div>
         <div class="gal-info">
           <span class="gal-tag">Dashboard Banner</span>
           <h3>Texas Dashboard</h3>
@@ -593,7 +619,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo3.webp" alt="Florida State Roleplay Dashboard"></div>
+        <div class="gal-preview"><img src="Photo3.webp" onclick="openLightbox(this.src)" alt="Florida State Roleplay Dashboard"></div>
         <div class="gal-info">
           <span class="gal-tag">Dashboard Banner</span>
           <h3>Florida State Roleplay Dashboard</h3>
@@ -602,7 +628,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview" style="background:#a8d8f0;"><img src="Photo4.webp" alt="Head Designs Promo" style="object-fit:contain;"></div>
+        <div class="gal-preview" style="background:#a8d8f0;"><img src="Photo4.webp" onclick="openLightbox(this.src)" alt="Head Designs Promo" style="object-fit:contain;"></div>
         <div class="gal-info">
           <span class="gal-tag">Promo Graphic</span>
           <h3>Head Designs — Join Today</h3>
@@ -611,7 +637,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo5.webp" alt="Salt Lake Sessions City Roleplay"></div>
+        <div class="gal-preview"><img src="Photo5.webp" onclick="openLightbox(this.src)" alt="Salt Lake Sessions City Roleplay"></div>
         <div class="gal-info">
           <span class="gal-tag">Group Banner</span>
           <h3>Salt Lake Sessions City Roleplay</h3>
@@ -620,7 +646,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo6.webp" alt="Seattle City Roleplay"></div>
+        <div class="gal-preview"><img src="Photo6.webp" onclick="openLightbox(this.src)" alt="Seattle City Roleplay"></div>
         <div class="gal-info">
           <span class="gal-tag">Group Banner</span>
           <h3>Seattle City Roleplay</h3>
@@ -629,7 +655,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview" style="background:#111c2a;"><img src="Phto7.webp" alt="Texas Divider Bar" style="object-fit:contain;"></div>
+        <div class="gal-preview" style="background:#111c2a;"><img src="Phto7.webp" onclick="openLightbox(this.src)" alt="Texas Divider Bar" style="object-fit:contain;"></div>
         <div class="gal-info">
           <span class="gal-tag">Divider / Asset</span>
           <h3>Texas Roleplay Divider Bar</h3>
@@ -638,7 +664,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview" style="background:#0e0e08;"><img src="Photo8.webp" alt="Florida Divider Bar" style="object-fit:contain;"></div>
+        <div class="gal-preview" style="background:#0e0e08;"><img src="Photo8.webp" onclick="openLightbox(this.src)" alt="Florida Divider Bar" style="object-fit:contain;"></div>
         <div class="gal-info">
           <span class="gal-tag">Divider / Asset</span>
           <h3>Florida Roleplay Divider Bar</h3>
@@ -647,7 +673,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview" style="background:#e8f4ff;"><img src="Photo9.webp" alt="City Skyline Logo" style="object-fit:contain; padding:16px;"></div>
+        <div class="gal-preview" style="background:#e8f4ff;"><img src="Photo9.webp" onclick="openLightbox(this.src)" alt="City Skyline Logo" style="object-fit:contain; padding:16px;"></div>
         <div class="gal-info">
           <span class="gal-tag">Logo / Icon</span>
           <h3>City Skyline Logo</h3>
@@ -656,7 +682,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo10.webp" alt="Illinois State Police"></div>
+        <div class="gal-preview"><img src="Photo10.webp" onclick="openLightbox(this.src)" alt="Illinois State Police"></div>
         <div class="gal-info">
           <span class="gal-tag">Group Banner</span>
           <h3>Illinois State Police</h3>
@@ -665,7 +691,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview"><img src="Photo11.webp" alt="Developer Hub Information"></div>
+        <div class="gal-preview"><img src="Photo11.webp" onclick="openLightbox(this.src)" alt="Developer Hub Information"></div>
         <div class="gal-info">
           <span class="gal-tag">Channel Banner</span>
           <h3>Developer Hub — Information</h3>
@@ -674,7 +700,7 @@
       </div>
 
       <div class="gal-card">
-        <div class="gal-preview" style="background:#0a1020;"><img src="Photo12.webp" alt="New Jersey State Roleplay" style="object-fit:contain;"></div>
+        <div class="gal-preview" style="background:#0a1020;"><img src="Photo12.webp" onclick="openLightbox(this.src)" alt="New Jersey State Roleplay" style="object-fit:contain;"></div>
         <div class="gal-info">
           <span class="gal-tag">Promotional Graphic</span>
           <h3>New Jersey State Roleplay</h3>
@@ -692,23 +718,16 @@
 // ===== LIGHTBOX =====
 function openLightbox(src) {
   const lb = document.getElementById('lightbox');
-  document.getElementById('lb-img').src = src;
+  const img = document.getElementById('lb-img');
+  img.src = src;
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function closeLightbox(e) {
-  if (e && e.target === document.getElementById('lb-img')) return;
+function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
-// Wire up gallery images after DOM loads
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.gal-preview img').forEach(img => {
-    img.addEventListener('click', () => openLightbox(img.src));
-  });
-});
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
 
 // ===== NAV =====
 function showPage(id, el) {
